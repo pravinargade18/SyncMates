@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    font-family: "Lexend", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    color: white;
+}
+
+*{
+    margin: 0;
+    padding: 0; 
+    box-sizing: border-box;
+}
+
+.glass-effect {
+    background: rgba(0, 0, 0, 0.35);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 10px;
+}
+
+.scrollbar {
+    scrollbar-color: #2e343d transparent;
+    scrollbar-width: thin;
+}
+.scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 6px;
+}
+.scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 10px;
+    opacity: 0;
+}
+.scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: #2e343d;
+    opacity: 1;
+}
+
+#ReactSimpleImageViewer {
+    z-index: 99;
+}
+#ReactSimpleImageViewer .react-simple-image-viewer__close {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: #2e343d;
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 36px;
+    text-align: center;
+    padding-bottom: 10px;
+}
