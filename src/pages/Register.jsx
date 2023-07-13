@@ -3,7 +3,9 @@ import { IoLogoGoogle, IoLogoFacebook } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
-import { auth } from "../firebase/firebase.config";
+import { auth, db } from "../firebase/firebase.config";
+import { doc, setDoc } from "firebase/firestore";
+import { profileColors } from "../utils/constants";
 
 
 const gProvider = new GoogleAuthProvider();
@@ -15,6 +17,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const navigate=useNavigate();
   const { currentUser, isLoading } = useAuth();
+  // console.log(name);
   useEffect(() => {
     if (!isLoading && currentUser) {
       // user loggedin
@@ -43,21 +46,32 @@ const Register = () => {
     }
   };
 
-  const formSubmitHanlder = async (e) => {
+  const handleSubmit=async(e)=>{
     e.preventDefault();
-
+const colorIndex=Math.floor(Math.random()* profileColors.length)
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      const {user}=await createUserWithEmailAndPassword(auth,email,password);
+      console.log(user);
 
-      updateProfile(auth.currentUser,{
-        displayName:name
+      updateProfile(auth.currentUser, {
+        displayName: name,
+        
+      });
+
+      await setDoc(doc(db,"users",user.uid),{
+        uid:user.uid,
+        displayName:name,
+       email: email,
+       color:profileColors[colorIndex]
       })
-      setEmail("");
-      setPassword("");
+
+      await setDoc(doc(db,"userChats",user.uid),{})
+
+      
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 
   return isLoading || (!isLoading && currentUser) ? (
     <p className="text-black">Loading...</p>
@@ -94,7 +108,7 @@ const Register = () => {
         </div>
 
         <form
-          onClick={formSubmitHanlder}
+          onSubmit={handleSubmit}
           className="flex flex-col items-center gap-3 w-[520px] mt-5"
         >
           <input
