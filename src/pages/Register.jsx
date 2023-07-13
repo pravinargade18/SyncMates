@@ -1,8 +1,67 @@
+import { useEffect, useState } from "react";
 import { IoLogoGoogle, IoLogoFacebook } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/authContext";
+import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import { auth } from "../firebase/firebase.config";
+
+
+const gProvider = new GoogleAuthProvider();
+
 
 const Register = () => {
-  return (
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate=useNavigate();
+  const { currentUser, isLoading } = useAuth();
+  useEffect(() => {
+    if (!isLoading && currentUser) {
+      // user loggedin
+      navigate("/login");
+    }
+  }, [currentUser, isLoading]);
+
+  const emailHandler = (e) => {
+    setEmail(e.target.value);
+  };
+  const passwordHandler = (e) => {
+    setPassword(e.target.value);
+  };
+  const nameHandler = (e) => {
+    setName(e.target.value);
+  };
+
+
+
+  const signInWithGoogleHandler = async () => {
+    try {
+      const { user } = await signInWithPopup(auth, gProvider);
+      console.log(user);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const formSubmitHanlder = async (e) => {
+    e.preventDefault();
+
+    try {
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+
+      updateProfile(auth.currentUser,{
+        displayName:name
+      })
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return isLoading || (!isLoading && currentUser) ? (
+    <p className="text-black">Loading...</p>
+  ) : (
     <div className="h-[100vh] flex justify-center items-center bg-c1">
       <div className="flex w-[520px]   items-center flex-col">
         <div className="text-center">
@@ -13,7 +72,10 @@ const Register = () => {
         </div>
         <div className="flex items-center gap-2 w-full mt-10 mb-5">
           <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-1/2 h-14 rounded-md cursor-pointer p-[1px]">
-            <div className="flex items-center justify-center gap-3 text-white font-semibold bg-c1 w-full h-full rounded-md">
+            <div
+              onClick={signInWithGoogleHandler}
+              className="flex items-center justify-center gap-3 text-white font-semibold bg-c1 w-full h-full rounded-md"
+            >
               <IoLogoGoogle size={24} />
               <span>Login with Google</span>
             </div>
@@ -31,24 +93,33 @@ const Register = () => {
           <span className="w-5 h-[1px] bg-c3"></span>
         </div>
 
-        <form className="flex flex-col items-center gap-3 w-[520px] mt-5">
+        <form
+          onClick={formSubmitHanlder}
+          className="flex flex-col items-center gap-3 w-[520px] mt-5"
+        >
           <input
             type="text"
             placeholder="Username"
             className="w-full h-14 bg-c5 rounded-xl outline-none border-none px-5 text-c3"
             autoComplete="off"
+            value={name}
+            onChange={nameHandler}
           />
           <input
             type="email"
             placeholder="Email"
             className="w-full h-14 bg-c5 rounded-xl outline-none border-none px-5 text-c3"
             autoComplete="off"
+            value={email}
+            onChange={emailHandler}
           />
           <input
             type="password"
             placeholder="Password"
             className="w-full h-14 bg-c5 rounded-xl outline-none border-none px-5 text-c3"
             autoComplete="off"
+            value={password}
+            onChange={passwordHandler}
           />
 
           <div className="text-right w-full text-c3">
