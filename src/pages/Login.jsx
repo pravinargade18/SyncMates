@@ -6,6 +6,7 @@ import { auth } from '../firebase/firebase.config';
 import { useAuth } from '../context/authContext';
 import ToastMessage from '../components/ToastMessage';
 import { toast } from 'react-toastify';
+import Loader from '../components/Loader';
 
 const gProvider=new GoogleAuthProvider();
 
@@ -80,7 +81,7 @@ const Login = () => {
 
   }
   return isLoading || (!isLoading && currentUser) ?(
-    <p className="text-black">Loading...</p>
+    <Loader/>
   ):(
     <div className="h-[100vh] flex justify-center items-center bg-c1">
     <ToastMessage/>

@@ -6,6 +6,7 @@ import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup, up
 import { auth, db } from "../firebase/firebase.config";
 import { doc, setDoc } from "firebase/firestore";
 import { profileColors } from "../utils/constants";
+import Loader from "../components/Loader";
 
 
 const gProvider = new GoogleAuthProvider();
@@ -74,7 +75,7 @@ const colorIndex=Math.floor(Math.random()* profileColors.length)
   }
 
   return isLoading || (!isLoading && currentUser) ? (
-    <p className="text-black">Loading...</p>
+    <Loader/>
   ) : (
     <div className="h-[100vh] flex justify-center items-center bg-c1">
       <div className="flex w-[520px]   items-center flex-col">

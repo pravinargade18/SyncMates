@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase/firebase.config";
+import { auth, db } from "../firebase/firebase.config";
 import { signOut as authSignOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 const UserContext=createContext({});
 
 export const UserProvider=({children})=>{
@@ -19,14 +20,14 @@ export const UserProvider=({children})=>{
     }
 
 
-    const authStateChanged=(user)=>{
+    const authStateChanged=async (user)=>{
         setIsLoading(true);
         if(!user){
             clear();
             return; 
         }
-
-        setCurrentUser(user);
+        const userDoc=await getDoc(doc(db,'users',user.uid));
+        setCurrentUser(userDoc.data());  //data() gives all the data/object stored in collection
         setIsLoading(false);
     }
     
