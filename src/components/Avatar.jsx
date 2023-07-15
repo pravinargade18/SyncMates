@@ -19,19 +19,34 @@ const Avatar = ({size,user,onClick}) => {
             ? "text-4xl"
             : "text-base";
   return (
-    <div onClick={onClick} className={`${c} rounded-full flex items-center justify-center text-base shrink-0 relative`} style={{backgroundColor: user?.color}}>
-        {user?.photoURL ?(
-            
-            <div className={`${c}  overflow-hidden rounded-full`}>
-                <img src={user?.photoURL} alt="user" width={s} height={s}/>
-            </div>
-        ):(
-            <div className={`uppercase font-semibold ${f}`}>
-                {user?.displayName?.charAt(0)}
-            </div>
-        )}
+    <div
+      onClick={onClick}
+      className={`${c} rounded-full flex items-center justify-center text-base shrink-0 relative`}
+      style={{ backgroundColor: user?.color }}
+    >
+      {user?.isOnline && (
+        <>
+          {size === "large" && (
+            <span className="w-[10px] h-[10px] bg-green-500 rounded-full absolute bottom-[2px] right-[2px]"></span>
+          )}
+
+          {size === "x-large" && (
+            <span className="w-[10px] h-[10px] bg-green-500 rounded-full absolute bottom-[3px] right-[3px]"></span>
+          )}
+        </>
+      )}
+
+      {user?.photoURL ? (
+        <div className={`${c}  overflow-hidden rounded-full`}>
+          <img src={user?.photoURL} alt="user" width={s} height={s} />
+        </div>
+      ) : (
+        <div className={`uppercase font-semibold ${f}`}>
+          {user?.displayName?.charAt(0)}
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
 export default Avatar;
