@@ -9,17 +9,83 @@ import { IoMdClose } from "react-icons/io";
 import { BsFillCheckCircleFill } from "react-icons/bs";
 import { MdAddAPhoto, MdDeleteForever, MdPhotoCamera,  } from "react-icons/md";
 import {profileColors}  from '../utils/constants'
+import { toast } from "react-toastify";
+import ToastMessage from "../components/ToastMessage";
+import { doc, updateDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase/firebase.config';
+import { updateProfile } from 'firebase/auth';
+
+
+
+
 
 const LeftNav = () => {
 
     const [editProfile,setEditProfile] = useState(true);
     const [nameEdited,setNameEdited] = useState(false);
 
-    const {currentUser,signOut}=useAuth();
+    const {currentUser,signOut,setCurrentUser}=useAuth();
 
     const handleUpdateProfile = (type,value)=>{
         //types-->color, photo ,remove photo ,change name
-        
+
+        let user={...currentUser};
+
+        switch(type){
+            case "color":
+              user.color=value;
+              break;
+
+            case "name":
+              user.displayName=value;
+              break;
+
+            case "photo":
+              user.photoURL=value;
+              break;
+
+            case "photo-remove":
+              user.photoURL=null;  //if photo is remove make photo as null
+              break;
+
+            default:
+              break;
+        }
+
+        try {
+          toast.promise(
+            async () => {
+              // our logic -->firebase docs
+             const userDocRef= doc(db,'users',currentUser.uid);
+             await updateDoc(userDocRef,user);
+             setCurrentUser(user);   //updating local state of user
+
+             if(type==='photo-remove'){
+                await updateProfile(auth.currentUser,{
+                  photoURL:null
+                })
+             }
+             if(type==='name'){
+                await updateProfile(auth.currentUser,{
+                  displayName:value
+                })
+                setNameEdited(false);
+             }
+             
+            },
+            {
+              pending: "Updating profile...",
+              success: "Profile updated successfully!",
+              error: "Profile updation failed!",
+            },
+            {
+              autoClose: 3000,
+            }
+          );
+        } catch (error) {
+          console.log(error);
+        }
+
     }
 
     const onKeyUp = (e) => {
@@ -44,6 +110,7 @@ const LeftNav = () => {
     const editProfileContainer=()=>{
       return (
         <div className="relative flex flex-col items-center">
+        <ToastMessage/>
           <Icon
             size="small"
             className="absolute top-0 right-5  hover:bg-c2"
@@ -84,6 +151,8 @@ const LeftNav = () => {
             {nameEdited && (
               <BsFillCheckCircleFill className="text-c4 cursor-pointer" onClick={()=>{
                 //name change logic
+                const value = document.getElementById("displayNameEdit").innerText;
+                handleUpdateProfile("name",value);
               }}/>
             )}
               <div
@@ -108,6 +177,7 @@ const LeftNav = () => {
                       key={index}
                       className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-125"
                       style={{backgroundColor:color}}
+                      
                     >
                      {color===currentUser?.color && <BiCheck size={24}/>}
                     </span>
