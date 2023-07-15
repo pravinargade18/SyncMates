@@ -15,19 +15,26 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { auth, db, storage } from '../firebase/firebase.config';
 import { updateProfile } from 'firebase/auth';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-
+import UsersPopup from './popup/UsersPopup';
+UsersPopup;
 
 
 
 
 const LeftNav = () => {
 
-    const [editProfile,setEditProfile] = useState(true);
+    const [editProfile,setEditProfile] = useState(false);
     const [nameEdited,setNameEdited] = useState(false);
+    const [usersPopup,setUsersPopup] = useState(false);
 
     const {currentUser,signOut,setCurrentUser}=useAuth();
 
-
+  const userPopupHandler=()=>{
+    setUsersPopup((usersPopup)=>!usersPopup)
+  }
+  const hideUserPopupHandler = () => {
+    setUsersPopup((usersPopup) => !usersPopup);
+  };
     //image upload to firestore
 
      const uploadImageToFirestore =(file)=>{
@@ -275,7 +282,7 @@ const LeftNav = () => {
           size="x-large"
           className="bg-green-500 hover:bg-green-600"
           icon={<FiPlus size={24} />}
-          onClick={() => {}}
+          onClick={userPopupHandler}
         />
         <Icon
           size="x-large"
@@ -284,6 +291,7 @@ const LeftNav = () => {
           onClick={signOut}
         />
       </div>
+     {usersPopup && <UsersPopup title='Find user' onHide={hideUserPopupHandler} />}
     </div>
   );
 }
