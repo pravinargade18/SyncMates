@@ -110,7 +110,7 @@ const LeftNav = () => {
     const editProfileContainer=()=>{
       return (
         <div className="relative flex flex-col items-center">
-        <ToastMessage/>
+          <ToastMessage />
           <Icon
             size="small"
             className="absolute top-0 right-5  hover:bg-c2"
@@ -147,14 +147,18 @@ const LeftNav = () => {
 
           <div className="mt-5 flex flex-col items-center">
             <div className="flex items-center gap-2">
-            {!nameEdited && <BiEdit className="text-c3"/>}
-            {nameEdited && (
-              <BsFillCheckCircleFill className="text-c4 cursor-pointer" onClick={()=>{
-                //name change logic
-                const value = document.getElementById("displayNameEdit").innerText;
-                handleUpdateProfile("name",value);
-              }}/>
-            )}
+              {!nameEdited && <BiEdit className="text-c3" />}
+              {nameEdited && (
+                <BsFillCheckCircleFill
+                  className="text-c4 cursor-pointer"
+                  onClick={() => {
+                    //name change logic
+                    const value =
+                      document.getElementById("displayNameEdit").innerText;
+                    handleUpdateProfile("name", value);
+                  }}
+                />
+              )}
               <div
                 contentEditable
                 className="bg-transparent outline-none border-none text-center"
@@ -168,21 +172,21 @@ const LeftNav = () => {
 
             <span className="text c-3 text-sm">{currentUser?.email}</span>
           </div>
-              
-              {/* profile colors */}
+
+          {/* profile colors */}
           <div className="grid grid-cols-5 gap-4 mt-5">
-                {
-                  profileColors.map((color,index)=>(
-                    <span
-                      key={index}
-                      className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-125"
-                      style={{backgroundColor:color}}
-                      
-                    >
-                     {color===currentUser?.color && <BiCheck size={24}/>}
-                    </span>
-                  ))
-                }
+            {profileColors.map((color, index) => (
+              <span
+                key={index}
+                className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-125"
+                style={{ backgroundColor: color }}
+                onClick={() => {
+                  handleUpdateProfile("color", color);
+                }}
+              >
+                {color === currentUser?.color && <BiCheck size={24} />}
+              </span>
+            ))}
           </div>
         </div>
       );
