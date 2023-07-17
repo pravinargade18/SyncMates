@@ -15,6 +15,14 @@ export const ChatContextProvider=({children})=>{
     const [chats,setChats]=useState([]);
     const [selectedChat,setSelectedChat]=useState(null);
 
+    const [inputText,setInputText]=useState("");
+    const [attachment,setAttachment]=useState(null);
+    const [attachmentPreview,setAttachmentPreview]=useState(null);
+    const [editMessage,setEditMessage]=useState(null);
+    const [isTyping,setIsTyping]=useState(null);
+    const [imageViewer,setImageViewer]=useState(null);
+
+
     const {currentUser}=useAuth();
 
   const INITIAL_STATE = { chatId: "", user: null };
@@ -43,10 +51,22 @@ export const ChatContextProvider=({children})=>{
           setUsers,
           dispatch,
           chats,
-          data:state,
+          data: state,
           setChats,
           selectedChat,
           setSelectedChat,
+          inputText,
+          setInputText,
+          attachment,
+          setAttachment,
+          attachmentPreview,
+          setAttachmentPreview,
+          editMessage,
+          setEditMessage,
+          isTyping,
+          setIsTyping,
+          imageViewer,
+          setImageViewer,
         }}
       >
         {children}
