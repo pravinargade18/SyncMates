@@ -12,6 +12,9 @@ const chatContext=createContext();
 export const ChatContextProvider=({children})=>{
 
     const [users,setUsers]=useState(false);
+    const [chats,setChats]=useState({});
+    const [selectedChat,setSelectedChat]=useState(false);
+
     const {currentUser}=useAuth();
 
   const INITIAL_STATE = { chatId: "", user: null };
@@ -34,9 +37,19 @@ export const ChatContextProvider=({children})=>{
     
     const [state,dispatch]=useReducer(chatReducer, INITIAL_STATE);
     return (
-        <chatContext.Provider value={{users,setUsers,dispatch}}>
-            {children}
-        </chatContext.Provider>
+      <chatContext.Provider
+        value={{
+          users,
+          setUsers,
+          dispatch,
+          chats,
+          setChats,
+          selectedChat,
+          setSelectedChat,
+        }}
+      >
+        {children}
+      </chatContext.Provider>
     );
 }
 
