@@ -12,8 +12,8 @@ const chatContext=createContext();
 export const ChatContextProvider=({children})=>{
 
     const [users,setUsers]=useState(false);
-    const [chats,setChats]=useState({});
-    const [selectedChat,setSelectedChat]=useState(false);
+    const [chats,setChats]=useState([]);
+    const [selectedChat,setSelectedChat]=useState(null);
 
     const {currentUser}=useAuth();
 

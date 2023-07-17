@@ -8,11 +8,18 @@ import { useAuth } from "../context/authContext";
 import { formatDate } from "../utils/helpers";
 
 const Chats = () => {
-  const { users, setUsers, chats, setChats, selectedChat, setSelectedChat } =
+  const { users, setUsers, chats, setChats, selectedChat, setSelectedChat ,dispatch} =
     useChatContext({});
   const { currentUser } = useAuth();
   const [search, setSearch] = useState("");
 
+
+  const handleSelect=(user,selectedChatId)=>{
+    setSelectedChat(user);
+    dispatch({ type: "CHANGE_USER", payload: user });
+
+  }
+  
   useEffect(() => {
     // get all the chats for currentUser with all other users
     //firebase docs--> 'get real time updates'
@@ -30,7 +37,7 @@ const Chats = () => {
     currentUser.uid && getChats();
   }, []);
 
-  const filteredChats = Object.entries(chats || {}).sort((a,b)=>b[1].date-a[1].date) //it will give array of all users each inner array will consists data like ['xkbwT2TLVWVOfCeSOMFeTZCeVqg1mTUwYwO8o0gyL7snHDfFDifzXxr2', {date: ,userInfo:{}}]  -->also we need to sort all the array on the basis of date in descending order so that we can keep the chatting with most recent user above of all other users  array format -->0
+  const filteredChats = Object.entries(chats || {}).filter(([,chat])=>chat?.userInfo?.displayName?.toLowerCase().includes(search?.toLowerCase()) || chat?.lastMessage?.text?.toLowerCase().includes(search?.toLowerCase())).sort((a,b)=>b[1].date-a[1].date) //it will give array of all users each inner array will consists data like ['xkbwT2TLVWVOfCeSOMFeTZCeVqg1mTUwYwO8o0gyL7snHDfFDifzXxr2', {date: ,userInfo:{}}]  -->also we need to sort all the array on the basis of date in descending order so that we can keep the chatting with most recent user above of all other users  array format -->0
 // :"xkbwT2TLVWVOfCeSOMFeTZCeVqg1b6exUxrgeHRtiYNmc7zO9eQUZ483"
 // 1: {date: _it, userInfo: {…}}
 
@@ -57,7 +64,7 @@ const Chats = () => {
         <input
           type="text"
           onChange={(e) => {
-            e.target.value;
+            setSearch(e.target.value)
           }}
           placeholder="Search user..."
           value={search}
@@ -68,7 +75,7 @@ const Chats = () => {
       {/* user chats */}
       <ul className="flex flex-col w-full my-5 gap-[2px]">
           {/* if currentUser had chat with atleast one user  */}
-          {Object.keys(users || {}).length > 0 && filteredChats?.map((chat,index)=>{
+          {Object.keys(users || {}).length > 0 && filteredChats?.map((chat)=>{
 
             {/* we need all info of the user like online status and all so we will find it in users collection by matching uid in filteredChat's current chat */}
             const user=users[chat[1].userInfo.uid] ;  //users[otherusers id]
@@ -82,8 +89,8 @@ const Chats = () => {
             return (
               <li
                 key={chat[0]}
-                
-                className={`h-[90px] flex items-center gap-4 rounded-3xl hover:bg-c1 p-4 cursor-pointer bg-c1`}
+                onClick={()=>handleSelect(user,chat[0])}
+                className={`h-[90px] flex items-center gap-4 rounded-3xl hover:bg-c1 p-4 cursor-pointer ${selectedChat?.uid === user?.uid ? "bg-c1" : ""}`}
               >
                 <Avatar size="x-large" user={user} />
                 {/* other user and chat info  */}
