@@ -43,6 +43,7 @@ export const ChatContextProvider=({children})=>{
           setUsers,
           dispatch,
           chats,
+          data:state,
           setChats,
           selectedChat,
           setSelectedChat,

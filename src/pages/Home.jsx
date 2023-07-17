@@ -4,10 +4,13 @@ import { useEffect } from "react";
 import Loader from "../components/Loader";
 import LeftNav from "../components/LeftNav";
 import Chats from "../components/Chats";
+import Chat from "../components/Chat";
+import { useChatContext } from "../context/chatContext";
 
 const Home = () => {
   const navigate=useNavigate();
   const {signOut,isLoading,currentUser} = useAuth();
+  const {data}= useChatContext();
 
   useEffect(()=>{
     if(!isLoading && !currentUser) {
@@ -27,7 +30,7 @@ const Home = () => {
                     <Chats/>
             </div>
           </div>
-          <div>Chat</div>
+          {data.user && <Chat/>}
         </div>
       </div>
     </div>
