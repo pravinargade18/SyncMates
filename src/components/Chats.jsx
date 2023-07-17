@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChatContext } from "../context/chatContext";
 import { Timestamp, collection, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/firebase.config";
@@ -13,6 +13,8 @@ const Chats = () => {
   const { currentUser } = useAuth();
   const [search, setSearch] = useState("");
 
+  const isCodeBlockExecutedRef=useRef(false);
+  const isUsersFetchedRef=useRef(false);
 
   const handleSelect=(user,selectedChatId)=>{
     setSelectedChat(user);
@@ -20,22 +22,7 @@ const Chats = () => {
 
   }
   
-  useEffect(() => {
-    // get all the chats for currentUser with all other users
-    //firebase docs--> 'get real time updates'
-
-    const getChats = () => {
-      const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
-        if (doc.exists()) {
-          const data = doc.data();
-          setChats(data);
-        }
-      });
-    };
-
-    // if currentUser available then only get chat data for currentUser
-    currentUser.uid && getChats();
-  }, []);
+  
 
   const filteredChats = Object.entries(chats || {}).filter(([,chat])=>chat?.userInfo?.displayName?.toLowerCase().includes(search?.toLowerCase()) || chat?.lastMessage?.text?.toLowerCase().includes(search?.toLowerCase())).sort((a,b)=>b[1].date-a[1].date) //it will give array of all users each inner array will consists data like ['xkbwT2TLVWVOfCeSOMFeTZCeVqg1mTUwYwO8o0gyL7snHDfFDifzXxr2', {date: ,userInfo:{}}]  -->also we need to sort all the array on the basis of date in descending order so that we can keep the chatting with most recent user above of all other users  array format -->0
 // :"xkbwT2TLVWVOfCeSOMFeTZCeVqg1b6exUxrgeHRtiYNmc7zO9eQUZ483"
@@ -54,8 +41,44 @@ const Chats = () => {
         // console.log(doc.data());
       });
       setUsers(updatedUsers);
+
+      if(!isCodeBlockExecutedRef.current){
+        isUsersFetchedRef.current=true;  //users fetched
+      }
     });
   }, []);
+
+
+  useEffect(() => {
+    // get all the chats for currentUser with all other users
+    //firebase docs--> 'get real time updates'
+
+    const getChats = () => {
+      const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          setChats(data);
+
+          // this block should be executed only once when the application starts 
+          if(!isCodeBlockExecutedRef.current && isUsersFetchedRef.current && users){
+              const firstChat=Object.values(data).sort((a,b)=>b.date-a.date)[0];
+
+              if(firstChat){
+                const user=users[firstChat?.userInfo?.uid]; //users[id]
+
+                handleSelect(user);
+              }
+
+              isCodeBlockExecutedRef.current=true; //block executed
+              
+          }
+        }
+      });
+    };
+
+    // if currentUser available then only get chat data for currentUser
+    currentUser.uid && getChats();
+  }, [isCodeBlockExecutedRef.current,users]);
 
   return (
     <div className="flex flex-col h-full ">
