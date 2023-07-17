@@ -5,6 +5,7 @@ import { db } from "../firebase/firebase.config";
 import { RiSearch2Line } from "react-icons/ri";
 import Avatar from "./Avatar";
 import { useAuth } from "../context/authContext";
+import { formatDate } from "../utils/helpers";
 
 const Chats = () => {
   const { users, setUsers, chats, setChats, selectedChat, setSelectedChat } =
@@ -77,10 +78,11 @@ const Chats = () => {
             );
 
             const date=timestamp.toDate();
-            console.log(date)
+            {/* console.log(date) */}
             return (
               <li
-                key={index}
+                key={chat[0]}
+                
                 className={`h-[90px] flex items-center gap-4 rounded-3xl hover:bg-c1 p-4 cursor-pointer bg-c1`}
               >
                 <Avatar size="x-large" user={user} />
@@ -88,10 +90,12 @@ const Chats = () => {
                 <div className="flex flex-col gap-1 grow relative">
                   <span className="text-base text-white flex items-center justify-between">
                     <div className="font-medium">{user?.displayName}</div>
-                    <div className="text-c3 text-xs">date</div>
+                    <div className="text-c3 text-xs">{formatDate(date)}</div>
                   </span>
                   <p className="text-sm text-c3 line-clamp-1 break-all">
-                    {chat[1]?.lastMessage?.text || (chat[1]?.lastMessage?.img && 'image') || "Start conversation"}
+                    {chat[1]?.lastMessage?.text ||
+                      (chat[1]?.lastMessage?.img && "image") ||
+                      "Start conversation"}
                   </p>
                   {/* line-clamp-1 will show only one line and break the text after that n will show dots */}
                   {/* break all is if the single word is so long so it will show whole word without breaking so we need to break it using break all
