@@ -103,8 +103,8 @@ const Chats = () => {
             {/* we need all info of the user like online status and all so we will find it in users collection by matching uid in filteredChat's current chat */}
             const user=users[chat[1].userInfo.uid] ;  //users[otherusers id]
             const timestamp = new Timestamp(  //firebase timestamp method -->object
-              chat[1].date.seconds,
-              chat[1].date.nanoseconds
+              chat[1].date?.seconds,
+              chat[1].date?.nanoseconds
             );
 
             const date=timestamp.toDate();
@@ -124,7 +124,7 @@ const Chats = () => {
                   </span>
                   <p className="text-sm text-c3 line-clamp-1 break-all">
                     {chat[1]?.lastMessage?.text ||
-                      (chat[1]?.lastMessage?.img && "image") ||
+                      (chat[1]?.lastMessage?.img && "🌄 Photo") ||
                       "Start conversation"}
                   </p>
                   {/* line-clamp-1 will show only one line and break the text after that n will show dots */}

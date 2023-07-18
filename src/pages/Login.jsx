@@ -7,6 +7,8 @@ import { useAuth } from '../context/authContext';
 import ToastMessage from '../components/ToastMessage';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
+// import MainLoader from '../components/MainLoader';
+
 
 const gProvider=new GoogleAuthProvider();
 
@@ -82,6 +84,7 @@ const Login = () => {
   }
   return isLoading || (!isLoading && currentUser) ?(
     <Loader/>
+    // <MainLoader/>
   ):(
     <div className="h-[100vh] flex justify-center items-center bg-c1">
     <ToastMessage/>
