@@ -4,6 +4,7 @@ import { useChatContext } from "../context/chatContext";
 import { useState } from "react";
 import { db } from "../firebase/firebase.config";
 import { useRef } from "react";
+import Message from "./Message";
 
 const Messages = () => {
     const [messages,setMessages]=useState([]);
@@ -20,7 +21,14 @@ const Messages = () => {
       return () => unsub();
     }, [data.chatId]);
   return (
-    <div ref={ref} className="grow p-5 overflow-auto scrollbar flex flex-col">Messages</div>
+    <div ref={ref} className="grow p-5 overflow-auto scrollbar flex flex-col">
+        {messages.map((msg)=>{
+          return (
+            <Message message={msg} key={msg.id}/>
+          )
+        })}
+        
+    </div>
   )
 }
 
