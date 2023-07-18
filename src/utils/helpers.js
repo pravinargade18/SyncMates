@@ -16,3 +16,13 @@ export const formatDate=(date)=>{
     return moment(date).format("MM/DD/YY")
 
 }
+
+// stackoverflow 
+export const wrapEmojisInHtmlTag = (messageText) => {
+  const regexEmoji = /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)/gu; // regex to match all Unicode emojis
+  return messageText.replace(regexEmoji, (match) => {
+    return `<span style="font-size:1.2em;position:relative;top:2px">${match}</span>`;
+  });
+};
+
+
