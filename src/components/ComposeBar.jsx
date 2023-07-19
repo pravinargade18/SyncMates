@@ -7,6 +7,7 @@ import { useAuth } from "../context/authContext";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { useEffect } from "react";
 
+let typingTimeout=null;
 
 const ComposeBar = () => {
     const { inputText, setInputText, data, attachment, setAttachmentPreview, setAttachment,editMessage,setEditMessage } =
@@ -19,9 +20,24 @@ const ComposeBar = () => {
       setInputText(editMessage?.text || "");
     },[editMessage])
 
+    if(typingTimeout){
+      clearTimeout(typingTimeout);
+    }
 
-    const typingHandler=(e)=>{
+    const typingHandler=async (e)=>{
         setInputText(e.target.value);
+        await updateDoc(doc(db,'chats',data.chatId),{
+          [`typing.${currentUser.uid}`]:true,
+        })
+
+
+        typingTimeout=setTimeout(async()=>{
+           await updateDoc(doc(db,'chats',data.chatId),{
+                [`typing.${currentUser.uid}`]:false,
+            })
+
+            typingTimeout=null;
+        },500)
     }
 
     const handleEdit=async ()=>{

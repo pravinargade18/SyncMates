@@ -10,7 +10,7 @@ import { useAuth } from "../context/authContext";
 
 const Messages = () => {
     const [messages,setMessages]=useState([]);
-    const {data}=useChatContext();
+    const { data, setIsTyping } = useChatContext();
     const {currentUser}=useAuth();
 
     const ref=useRef();  //needed this ref to keep the chat at the bottom
@@ -19,6 +19,7 @@ const Messages = () => {
       const unsub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
         if (doc.exists()) {
           setMessages(doc.data().messages);
+          setIsTyping(doc.data()?.typing?.[data.user.uid] || false);
         }
 
         setTimeout(() => {

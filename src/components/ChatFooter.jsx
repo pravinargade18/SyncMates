@@ -18,6 +18,7 @@ const ChatFooter = () => {
       isTyping,
       setAttachment,
       inputText,
+      data,
       setInputText,
       attachmentPreview,
       setAttachmentPreview,
@@ -96,7 +97,7 @@ const ChatFooter = () => {
       {isTyping && (
         <div className="absolute -top-6 left-4 bg-c2 w-full h-6">
           <div className="flex gap-2 w-full h-full opacity-50 text-sm text-white">
-            {`user is typing`}
+            {`${data?.user?.displayName} is typing`}
             <img src="/typing.svg" alt="typing" />
           </div>
         </div>
