@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { Timestamp, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "../context/authContext";
 import { useChatContext } from "../context/chatContext";
 import Avatar from "./Avatar";
@@ -9,6 +9,8 @@ import Icon from "./Icon";
 import {GoChevronDown} from 'react-icons/go'
 import MessageMenu from "./MessageMenu";
 import DeleteMessagePopup from "./popup/DeleteMessagePopup";
+import { db } from "../firebase/firebase.config";
+import { DELETED_FOR_EVERYONE, DELETED_FOR_ME } from "../utils/constants";
 
 
 const Message = ({ message }) => {
@@ -30,6 +32,42 @@ const Message = ({ message }) => {
     setShowMenu(false);  //close menu
   }
 
+
+
+  // delete message 
+  const deleteMessage=async(action)=>{
+
+    try {
+      const messageId=message.id;
+      const chatRef=doc(db,'chats',data.chatId);
+
+      const chatDoc=await getDoc(chatRef);
+
+      const updatedMessages=chatDoc.data().messages.map((message)=>{
+        if(message.id===messageId){
+          if(action===DELETED_FOR_ME){
+            message.deletedInfo={
+              [currentUser.uid]:DELETED_FOR_ME,
+            }
+          }
+          if(action===DELETED_FOR_EVERYONE){
+            message.deletedInfo={
+              deletedForEveryone:true,
+            }
+          }
+        }
+        return message;
+      })
+      //after changing the message array in document 'chats' we will update the messages array
+      await updateDoc(chatRef,{messages:updatedMessages});
+      setShowDeletePopup(false);
+    } catch (error) {
+      console.log(error);
+    }
+    
+  }
+
+
   const date = timestamp.toDate();
   
   return (
@@ -41,6 +79,7 @@ const Message = ({ message }) => {
           shortHeight={true}
           self={self}
           className="DeleteMessagePopup"
+          deleteMessage={deleteMessage}
         />
       )}
       <div

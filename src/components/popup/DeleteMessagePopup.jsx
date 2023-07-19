@@ -3,6 +3,7 @@ import {  RiErrorWarningLine } from "react-icons/ri";
 import { useAuth } from "../../context/authContext";
 import { useChatContext } from "../../context/chatContext";
 import PopupWrapper from "./PopupWrapper";
+import { DELETED_FOR_EVERYONE, DELETED_FOR_ME } from "../../utils/constants";
 
 const DeleteMessagePopup = (props) => {
   const { currentUser } = useAuth();
@@ -21,14 +22,14 @@ const DeleteMessagePopup = (props) => {
         </div>
 
         <div className="flex items-center justify-center gap-2 mt-10">
-          <button
-            onClick={() => {}}
+          {props.self &&(<button
+            onClick={() => props.deleteMessage(DELETED_FOR_ME)}
             className="border-[2px] border-red-700 py-2 px-4 text-sm rounded-md text-red-500 hover:bg-red-700 hover:text-white"
           >
             Delete for me
-          </button>
+          </button>)}
           <button
-            onClick={() => {}}
+            onClick={() => props.deleteMessage(DELETED_FOR_EVERYONE)}
             className="border-[2px] border-red-700 py-2 px-4 text-sm rounded-md text-red-500 hover:bg-red-700 hover:text-white"
           >
             Delete for everyone
