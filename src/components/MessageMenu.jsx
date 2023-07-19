@@ -1,7 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import ClickAwayListener from "react-click-away-listener";
 
-const MessageMenu = ({ showMenu, setShowMenu, self, deletePopupHandler }) => {
+const MessageMenu = ({
+  showMenu,
+  setShowMenu,
+  self,
+  deletePopupHandler,
+  setEditMessage,
+}) => {
   const closeMenuHandler = () => {
     setShowMenu(false);
   };
@@ -23,15 +29,23 @@ const MessageMenu = ({ showMenu, setShowMenu, self, deletePopupHandler }) => {
         <ul className="flex flex-col py-2">
           {/* currentUser only can edit the message */}
           {self && (
-            <li className="flex items-center py-3 px-5 hover:bg-black cursor-pointer">
+            <li
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditMessage();
+                setShowMenu(false);
+              }}
+              className="flex items-center py-3 px-5 hover:bg-black cursor-pointer"
+            >
               Edit Message
             </li>
           )}
 
           <li
-            onClick={(e)=>{
-              e.stopPropagation();  //to close the messageMenu
-              deletePopupHandler(true)}}
+            onClick={(e) => {
+              e.stopPropagation(); //to close the messageMenu
+              deletePopupHandler(true);
+            }}
             className="flex items-center py-3 px-5 hover:bg-black cursor-pointer"
           >
             Delete Message

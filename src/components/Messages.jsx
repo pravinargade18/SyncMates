@@ -20,9 +20,20 @@ const Messages = () => {
         if (doc.exists()) {
           setMessages(doc.data().messages);
         }
+
+        setTimeout(() => {
+          scrollToBottom();
+        },0);  //setTimeout executes only after all other code executes so it doesn't matters if we given 0 over there
       });
       return () => unsub();
     }, [data.chatId]);
+
+    // for new chats it should scroll automatically 
+
+    const scrollToBottom=()=>{
+        const chatContainer=ref.current;
+        chatContainer.scrollTop=chatContainer.scrollHeight;
+    }
   return (
     <div ref={ref} className="grow p-5 overflow-auto scrollbar flex flex-col">
         {messages?.filter((m)=>{  //filter method for deleted and deleted for everyone message filteration

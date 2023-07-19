@@ -14,7 +14,14 @@ import { DELETED_FOR_EVERYONE, DELETED_FOR_ME } from "../utils/constants";
 
 
 const Message = ({ message }) => {
-  const { users, data, imageViewer, setImageViewer } = useChatContext();
+  const {
+    users,
+    data,
+    imageViewer,
+    setImageViewer,
+    editMessage,
+    setEditMessage,
+  } = useChatContext();
   const { currentUser } = useAuth();
   const self = message?.sender === currentUser.uid;
 
@@ -155,6 +162,7 @@ const Message = ({ message }) => {
                 setShowMenu={setShowMenu}
                 showMenu={showMenu}
                 deletePopupHandler={deletePopupHandler}
+                setEditMessage={()=>setEditMessage(message)}
               />
             )}
           </div>

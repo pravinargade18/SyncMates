@@ -1,21 +1,101 @@
 import { TbSend } from "react-icons/tb";
 import { useChatContext } from "../context/chatContext";
-import { Timestamp, arrayUnion, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { Timestamp, arrayUnion, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db, storage } from "../firebase/firebase.config";
 import {v4 as uuid} from 'uuid';
 import { useAuth } from "../context/authContext";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { useEffect } from "react";
 
 
 const ComposeBar = () => {
-    const { inputText, setInputText, data, attachment, setAttachmentPreview, setAttachment} =
+    const { inputText, setInputText, data, attachment, setAttachmentPreview, setAttachment,editMessage,setEditMessage } =
       useChatContext();
     const {currentUser} = useAuth();
+
+    // to get the message we want edit inside composebar 
+
+    useEffect(() => {
+      setInputText(editMessage?.text || "");
+    },[editMessage])
+
 
     const typingHandler=(e)=>{
         setInputText(e.target.value);
     }
 
+    const handleEdit=async ()=>{
+
+      const messageId=editMessage.id;
+
+      const chatRef=doc(db,'chats',data.chatId);
+
+      const chatDoc=await getDoc(chatRef);
+        
+        if (attachment) {
+          // file uploading logic  --> firebase docs -->storage ->upload files
+          const storageRef = ref(storage, `chatImages/${uuid()}`); //basically filename has to be given so we gave username
+
+          const uploadTask = uploadBytesResumable(storageRef, attachment);
+
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const progress =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              console.log("Upload is " + progress + "% done");
+              switch (snapshot.state) {
+                case "paused":
+                  console.log("Upload is paused");
+                  break;
+                case "running":
+                  console.log("Upload is running");
+                  break;
+              }
+            },
+            (error) => {
+              console.log(error);
+            },
+            () => {
+              getDownloadURL(uploadTask.snapshot.ref).then(
+                async (downloadURL) => {
+                  //editing particular message using id
+                  let updatedMessages=chatDoc.data().messages.map((message) => {
+                    if (message.id === messageId) {
+                      message.text = inputText;
+                      message.img = downloadURL;
+                    }
+                    return message;
+                  });
+                  await updateDoc(chatRef,{messages:updatedMessages});
+                }
+              );
+            }
+          );
+        }
+        else{
+            let updatedMessages = chatDoc.data().messages.map((message) => {
+              if (message.id === messageId) {
+                message.text = inputText;
+              }
+              return message;
+            });
+            await updateDoc(chatRef, { messages: updatedMessages });
+        }
+        
+        setInputText('');  //set text to empty string after sending the message
+        setAttachment(null);
+        setAttachmentPreview(null);
+        setEditMessage(null);
+        
+    }
+
+    
+    const onKeyUp = (e) => {
+      if (e.key === "Enter" && (inputText || attachment)) {
+            editMessage ? handleEdit() : handleSend();
+      }
+    };
 
     const handleSend=async ()=>{
         // console.log('hey called');
@@ -104,12 +184,6 @@ const ComposeBar = () => {
     }
 
 
-    const onKeyUp = (e) => {
-        if (e.key === "Enter" && (inputText || attachment)) {
-          handleSend();
-        }
-
-    };
 
 
   return (
@@ -122,7 +196,7 @@ const ComposeBar = () => {
         onChange={typingHandler}
         onKeyUp={onKeyUp}
       />
-      <button onClick={handleSend} className={`h-10 w-10 rounded-xl shrink-0 flex justify-center items-center ${inputText.trim().length>0 ? 'bg-c4' :''} `}>
+      <button onClick={editMessage ? handleEdit: handleSend} className={`h-10 w-10 rounded-xl shrink-0 flex justify-center items-center ${inputText.trim().length>0 ? 'bg-c4' :''} `}>
         <TbSend size={20} className="text-white"/>
       </button>
     </div>
