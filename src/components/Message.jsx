@@ -4,7 +4,11 @@ import { useChatContext } from "../context/chatContext";
 import Avatar from "./Avatar";
 import ImageViewer from 'react-simple-image-viewer'
 import { formatDate, wrapEmojisInHtmlTag } from "../utils/helpers";
-
+import { useState } from "react";
+import Icon from "./Icon";
+import {GoChevronDown} from 'react-icons/go'
+import MessageMenu from "./MessageMenu";
+import DeleteMessagePopup from "./popup/DeleteMessagePopup";
 
 
 const Message = ({ message }) => {
@@ -12,6 +16,8 @@ const Message = ({ message }) => {
   const { currentUser } = useAuth();
   const self = message?.sender === currentUser.uid;
 
+  const [showMenu,setShowMenu]=useState(false);
+  const [showDeletePopup,setShowDeletePopup]=useState(false);
 
 
   const timestamp = new Timestamp( //firebase timestamp method -->object
@@ -19,10 +25,24 @@ const Message = ({ message }) => {
     message.date?.nanoseconds
   );
 
+  const deletePopupHandler=()=>{
+    setShowDeletePopup(true);  //show popup
+    setShowMenu(false);  //close menu
+  }
+
   const date = timestamp.toDate();
   
   return (
     <div className={`mb-5 max-w-[75%] ${self ? "self-end" : ""}`}>
+      {showDeletePopup && (
+        <DeleteMessagePopup
+          noHeader={true}
+          onHide={() => setShowDeletePopup(false)}
+          shortHeight={true}
+          self={self}
+          className="DeleteMessagePopup"
+        />
+      )}
       <div
         className={`flex items-end gap-3 mb-1  ${
           self ? "justify-start flex-row-reverse" : ""
@@ -77,8 +97,29 @@ const Message = ({ message }) => {
               )}
             </>
           )}
+          <div
+            className={`${
+              showMenu ? "" : "hidden"
+            } group-hover:flex absolute top-2 ${
+              self ? "left-2 bg-c5 " : "right-2 bg-c1"
+            } `}
+            onClick={() => setShowMenu(true)}
+          >
+            <Icon
+              size="medium"
+              className="hover:bg-inherit rounded-none  "
+              icon={<GoChevronDown size={24} className="text-c3" />}
+            />
+            {showMenu && (
+              <MessageMenu
+                self={self}
+                setShowMenu={setShowMenu}
+                showMenu={showMenu}
+                deletePopupHandler={deletePopupHandler}
+              />
+            )}
+          </div>
         </div>
-        message
       </div>
       <div
         className={`flex items-end ${

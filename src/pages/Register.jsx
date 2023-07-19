@@ -22,7 +22,7 @@ const Register = () => {
   useEffect(() => {
     if (!isLoading && currentUser) {
       // user loggedin
-      navigate("/login");
+      navigate("/");
     }
   }, [currentUser, isLoading]);
 
