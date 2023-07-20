@@ -25,6 +25,17 @@ export const ChatContextProvider=({children})=>{
 
     const {currentUser}=useAuth();
 
+
+
+    // reset footer states 
+    const resetFooterStates=()=>{
+        setInputText('');
+        setAttachment(null);
+        setAttachmentPreview(null);
+        setEditMessage(null);
+        setImageViewer(null);
+    }
+    
   const INITIAL_STATE = { chatId: "", user: null };
     const chatReducer = (state, action) => {
       switch (action.type) {
@@ -67,6 +78,7 @@ export const ChatContextProvider=({children})=>{
           setIsTyping,
           imageViewer,
           setImageViewer,
+          resetFooterStates,
         }}
       >
         {children}

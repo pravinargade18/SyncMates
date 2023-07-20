@@ -8,7 +8,7 @@ import { useAuth } from "../context/authContext";
 import { formatDate } from "../utils/helpers";
 
 const Chats = () => {
-  const { users, setUsers, chats, setChats, selectedChat, setSelectedChat ,dispatch,data} =
+  const { users, setUsers,resetFooterStates, chats, setChats, selectedChat, setSelectedChat ,dispatch,data} =
     useChatContext({});
   const { currentUser } = useAuth();
   const [search, setSearch] = useState("");
@@ -16,6 +16,13 @@ const Chats = () => {
 
   const isCodeBlockExecutedRef=useRef(false);
   const isUsersFetchedRef=useRef(false);
+
+  useEffect(()=>{
+      resetFooterStates();
+  },[data?.chatId])
+
+
+
 
   const readChat=async(chatId)=>{
     const chatRef=doc(db,'chats',chatId);
