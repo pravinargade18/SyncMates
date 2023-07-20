@@ -19,7 +19,7 @@ const Messages = () => {
       const unsub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
         if (doc.exists()) {
           setMessages(doc.data().messages);
-          setIsTyping(doc.data()?.typing?.[data.user.uid] || false);
+          setIsTyping(doc.data()?.typing?.[data.user.uid] || false);  //user who is typing that value we will get 
         }
 
         setTimeout(() => {

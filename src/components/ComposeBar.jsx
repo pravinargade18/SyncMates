@@ -21,7 +21,7 @@ const ComposeBar = () => {
     },[editMessage])
 
     if(typingTimeout){
-      clearTimeout(typingTimeout);
+      clearTimeout(typingTimeout);  //clearTimeout if it's already running
     }
 
     const typingHandler=async (e)=>{

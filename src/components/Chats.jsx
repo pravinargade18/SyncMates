@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useChatContext } from "../context/chatContext";
-import { Timestamp, collection, doc, onSnapshot } from "firebase/firestore";
+import { Timestamp, collection, doc, getDoc, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../firebase/firebase.config";
 import { RiSearch2Line } from "react-icons/ri";
 import Avatar from "./Avatar";
@@ -8,18 +8,37 @@ import { useAuth } from "../context/authContext";
 import { formatDate } from "../utils/helpers";
 
 const Chats = () => {
-  const { users, setUsers, chats, setChats, selectedChat, setSelectedChat ,dispatch} =
+  const { users, setUsers, chats, setChats, selectedChat, setSelectedChat ,dispatch,data} =
     useChatContext({});
   const { currentUser } = useAuth();
   const [search, setSearch] = useState("");
+  const [unreadMsgs, setUnreadMsgs] = useState({});
 
   const isCodeBlockExecutedRef=useRef(false);
   const isUsersFetchedRef=useRef(false);
 
+  const readChat=async(chatId)=>{
+    const chatRef=doc(db,'chats',chatId);
+    const chatDoc=await getDoc(chatRef);
+
+    let updatedMessages=chatDoc.data().messages.map(m=>{
+      if(m?.read===false){
+          m.read=true;
+      }
+      return m;
+    })
+
+    await updateDoc(chatRef,{
+      messages:updatedMessages
+    })
+  }
+
   const handleSelect=(user,selectedChatId)=>{
     setSelectedChat(user);
     dispatch({ type: "CHANGE_USER", payload: user });
-
+    if(unreadMsgs?.[selectedChatId]?.length>0){
+      readChat(selectedChatId);
+    }
   }
   
   
@@ -34,7 +53,7 @@ const Chats = () => {
 
   useEffect(() => {
     //firebase docs--> 'get real time updates'
-    onSnapshot(collection(db, "users"), (snap) => {
+    const unsub=onSnapshot(collection(db, "users"), (snap) => {
       const updatedUsers = {};
       snap.forEach((doc) => {
         updatedUsers[doc.id] = doc.data();
@@ -46,6 +65,7 @@ const Chats = () => {
         isUsersFetchedRef.current=true;  //users fetched
       }
     });
+    return ()=>unsub();
   }, []);
 
 
@@ -74,12 +94,56 @@ const Chats = () => {
           }
         }
       });
+       return () => unsub();
     };
 
     // if currentUser available then only get chat data for currentUser
     currentUser.uid && getChats();
   }, [isCodeBlockExecutedRef.current,users]);
 
+
+
+  useEffect(()=>{
+      const documentIds=Object.keys(chats);
+      if(documentIds.length===0){
+        return;
+      }
+
+      const q=query(
+        collection(db,'chats'),
+        where('__name__','in',documentIds)  //tracking realtime changes of all the  documents
+      )
+
+      const unsub=onSnapshot(q,(snapshot)=>{
+        let msgs={}  //all unread messages in key value pair
+        snapshot.forEach((doc)=>{
+          if(doc.id !==data.chatId){
+            // unread messages of other chat documents not of selected chat
+
+            msgs[doc.id]=doc.data().messages.filter((m)=>
+                m?.read===false && m?.sender !==currentUser.uid
+
+            );
+          }
+
+          Object.keys(msgs || {})?.map((c)=>{
+            if(msgs[c]?.length<1){
+              delete msgs[c];
+            }
+          }
+          
+          )
+        });
+
+        setUnreadMsgs(msgs);
+
+      });
+
+      return ()=> unsub();
+
+  },[chats,selectedChat])
+  
+  
   return (
     <div className="flex flex-col h-full ">
       <div className="shrink-0 sticky -top-[20px] z-10 flex justify-center w-full bg-c2 py-5">
@@ -112,8 +176,10 @@ const Chats = () => {
             return (
               <li
                 key={chat[0]}
-                onClick={()=>handleSelect(user,chat[0])}
-                className={`h-[90px] flex items-center gap-4 rounded-3xl hover:bg-c1 p-4 cursor-pointer ${selectedChat?.uid === user?.uid ? "bg-c1" : ""}`}
+                onClick={() => handleSelect(user, chat[0])}
+                className={`h-[90px] flex items-center gap-4 rounded-3xl hover:bg-c1 p-4 cursor-pointer ${
+                  selectedChat?.uid === user?.uid ? "bg-c1" : ""
+                }`}
               >
                 <Avatar size="x-large" user={user} />
                 {/* other user and chat info  */}
@@ -130,9 +196,11 @@ const Chats = () => {
                   {/* line-clamp-1 will show only one line and break the text after that n will show dots */}
                   {/* break all is if the single word is so long so it will show whole word without breaking so we need to break it using break all
                    */}
-                  <span className="absolute right-0 top-7 min-w-[20px] h-5 rounded-full bg-red-500 flex justify-center items-center text-sm ">
-                    5
-                  </span>
+                  {!!unreadMsgs?.[chat[0]]?.length && (
+                    <span className="absolute right-0 top-7 min-w-[20px] h-5 rounded-full bg-red-500 flex justify-center items-center text-sm ">
+                      {unreadMsgs?.[chat[0]]?.length}
+                    </span>
+                  )}
                 </div>
               </li>
             );
