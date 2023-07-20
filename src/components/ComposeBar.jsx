@@ -1,6 +1,6 @@
 import { TbSend } from "react-icons/tb";
 import { useChatContext } from "../context/chatContext";
-import { Timestamp, arrayUnion, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { Timestamp, arrayUnion, deleteField, doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db, storage } from "../firebase/firebase.config";
 import {v4 as uuid} from 'uuid';
 import { useAuth } from "../context/authContext";
@@ -193,6 +193,7 @@ const ComposeBar = () => {
           [data.chatId + ".lastMessage"]: msg,
           // whenever new msg comes date should be updated
           [data.chatId + ".date"]: serverTimestamp(),
+          [data.chatId + ".chatDeleted"]: deleteField(),
         });
         setInputText('');  //set text to empty string after sending the message
         setAttachment(null);

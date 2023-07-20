@@ -38,7 +38,7 @@ const Messages = () => {
   return (
     <div ref={ref} className="grow p-5 overflow-auto scrollbar flex flex-col">
         {messages?.filter((m)=>{  //filter method for deleted and deleted for everyone message filteration
-          return (m?.deletedInfo?.[currentUser.uid] !== DELETED_FOR_ME && !m.deletedInfo?.deletedForEveryone && !m?.deletedInfo?.[currentUser.uid]);
+          return (m?.deletedInfo?.[currentUser.uid] !== DELETED_FOR_ME && !m.deletedInfo?.deletedForEveryone && !m?.deleteChatInfo?.[currentUser.uid]);
         })?.
           map((msg)=>{
           return (

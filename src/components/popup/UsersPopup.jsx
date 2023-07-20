@@ -1,4 +1,4 @@
-import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
+import { deleteField, doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "../../context/authContext";
 import { useChatContext } from "../../context/chatContext";
 import Avatar from "../Avatar";
@@ -67,6 +67,9 @@ const handleSelect= async (user)=>{
                 }
                 else{
                     // chat doc is exists for this combinedId 
+                    await updateDoc(doc(db, "userChats", currentUser.uid), {
+                      [combinedId + ".chatDeleted"]: deleteField(),
+                    });
                     
                 }
 

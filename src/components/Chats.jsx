@@ -50,7 +50,16 @@ const Chats = () => {
   
   
 
-  const filteredChats = Object.entries(chats || {}).filter(([,chat])=>chat?.userInfo?.displayName?.toLowerCase().includes(search?.toLowerCase()) || chat?.lastMessage?.text?.toLowerCase().includes(search?.toLowerCase())).sort((a,b)=>b[1].date-a[1].date) //it will give array of all users each inner array will consists data like ['xkbwT2TLVWVOfCeSOMFeTZCeVqg1mTUwYwO8o0gyL7snHDfFDifzXxr2', {date: ,userInfo:{}}]  -->also we need to sort all the array on the basis of date in descending order so that we can keep the chatting with most recent user above of all other users  array format -->0
+  const filteredChats = Object.entries(chats || {})
+    .filter(([, chat]) => !chat.hasOwnProperty("chatDeleted"))
+    .filter(
+      ([, chat]) =>
+        chat?.userInfo?.displayName
+          ?.toLowerCase()
+          .includes(search?.toLowerCase()) ||
+        chat?.lastMessage?.text?.toLowerCase().includes(search?.toLowerCase())
+    )
+    .sort((a, b) => b[1].date - a[1].date); //it will give array of all users each inner array will consists data like ['xkbwT2TLVWVOfCeSOMFeTZCeVqg1mTUwYwO8o0gyL7snHDfFDifzXxr2', {date: ,userInfo:{}}]  -->also we need to sort all the array on the basis of date in descending order so that we can keep the chatting with most recent user above of all other users  array format -->0
 // :"xkbwT2TLVWVOfCeSOMFeTZCeVqg1b6exUxrgeHRtiYNmc7zO9eQUZ483"
 // 1: {date: _it, userInfo: {…}}
 
@@ -87,13 +96,16 @@ const Chats = () => {
           setChats(data);
 
           // this block should be executed only once when the application starts 
-          if(!isCodeBlockExecutedRef.current && isUsersFetchedRef.current && users){
-              const firstChat=Object.values(data).sort((a,b)=>b.date-a.date)[0];
+          if(!isCodeBlockExecutedRef.current && isUsersFetchedRef.current && users){  //ignore chats having chatDeleted key
+              const firstChat=Object.values(data).filter((chat)=>!chat.hasOwnProperty("chatDeleted")).sort((a,b)=>b.date-a.date)[0];
 
               if(firstChat){
                 const user=users[firstChat?.userInfo?.uid]; //users[id]
 
                 handleSelect(user);
+
+                const chatId=currentUser.uid>user.uid ? currentUser.uid + user.uid : user.uid + currentUser.uid;
+                readChat(chatId);
               }
 
               isCodeBlockExecutedRef.current=true; //block executed
