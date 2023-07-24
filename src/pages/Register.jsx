@@ -86,7 +86,7 @@ const colorIndex=Math.floor(Math.random()* profileColors.length)
           </div>
         </div>
         <div className="flex items-center gap-2 w-full mt-10 mb-5">
-          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-1/2 h-14 rounded-md cursor-pointer p-[1px]">
+          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-full h-14 rounded-md cursor-pointer p-[1px]">
             <div
               onClick={signInWithGoogleHandler}
               className="flex items-center justify-center gap-3 text-white font-semibold bg-c1 w-full h-full rounded-md"
@@ -95,12 +95,12 @@ const colorIndex=Math.floor(Math.random()* profileColors.length)
               <span>Login with Google</span>
             </div>
           </div>
-          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-1/2 h-14 rounded-md cursor-pointer p-[1px]">
+          {/* <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-1/2 h-14 rounded-md cursor-pointer p-[1px]">
             <div className="flex items-center justify-center gap-3 text-white font-semibold bg-c1 w-full h-full rounded-md">
               <IoLogoFacebook size={24} />
               <span>Login with Facebook</span>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="flex items-center gap-1">
           <span className="w-5 h-[1px] bg-c3"></span>
