@@ -119,7 +119,7 @@ const Message = ({ message }) => {
           {message?.img && (
             <>
               <img
-                src="https://firebasestorage.googleapis.com/v0/b/chatapp-26cff.appspot.com/o/images%2F705f0757-8c63-4d4f-b8d6-3ac7ff084845?alt=media&token=4055dd61-755c-4ecf-909a-29295985bebd"
+                src={message.img}
                 width={250}
                 height={250}
                 alt={message?.text || ""}
@@ -162,7 +162,7 @@ const Message = ({ message }) => {
                 setShowMenu={setShowMenu}
                 showMenu={showMenu}
                 deletePopupHandler={deletePopupHandler}
-                setEditMessage={()=>setEditMessage(message)}
+                setEditMessage={() => setEditMessage(message)}
               />
             )}
           </div>

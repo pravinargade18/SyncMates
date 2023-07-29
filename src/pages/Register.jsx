@@ -81,11 +81,11 @@ const colorIndex=Math.floor(Math.random()* profileColors.length)
       <div className="flex w-[520px]   items-center flex-col">
         <div className="text-center">
           <div className="text-4xl font-bold">Create New Account</div>
-          <div className="mt-3 text-c3">
+          <div className="mt-3 mb-6 text-c3">
             Connect and chat with anyone, anywhere
           </div>
         </div>
-        <div className="flex items-center gap-2 w-full mt-10 mb-5">
+        {/* <div className="flex items-center gap-2 w-full mt-10 mb-5">
           <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 w-full h-14 rounded-md cursor-pointer p-[1px]">
             <div
               onClick={signInWithGoogleHandler}
@@ -101,12 +101,12 @@ const colorIndex=Math.floor(Math.random()* profileColors.length)
               <span>Login with Facebook</span>
             </div>
           </div> */}
-        </div>
-        <div className="flex items-center gap-1">
+        {/* </div>  */}
+        {/* <div className="flex items-center gap-1">
           <span className="w-5 h-[1px] bg-c3"></span>
           <span className="text-c3 font-semibold ">OR</span>
           <span className="w-5 h-[1px] bg-c3"></span>
-        </div>
+        </div> */}
 
         <form
           onSubmit={handleSubmit}
