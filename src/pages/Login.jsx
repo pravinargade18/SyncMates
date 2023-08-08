@@ -57,16 +57,16 @@ const Login = () => {
     }
   }
   
-  const signInWithGoogleHandler=async()=>{
-    try {
-    const {user} = await signInWithPopup(auth, gProvider);
-      console.log(user);
-    } catch (error) {
-      console.log(error);
-    }
+  // const signInWithGoogleHandler=async()=>{
+  //   try {
+  //   const {user} = await signInWithPopup(auth, gProvider);
+  //     console.log(user);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
      
 
-  }
+  // }
 
   const formSubmitHanlder= async (e)=>{
       e.preventDefault();

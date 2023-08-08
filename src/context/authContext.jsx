@@ -11,22 +11,25 @@ export const UserProvider=({children})=>{
 
 
     const signOut=()=>{
-        authSignOut(auth).then(()=>clear());
+            setIsLoading(true);
+
+            authSignOut(auth).then(()=>clear());
+     
     }
     
     const clear=async()=>{
         try {
             if(currentUser){
-                await updateDoc(doc(db, "users", currentUser.uid), { isOnline: true });
+                await updateDoc(doc(db, "users", currentUser.uid), { isOnline: false });
             }
+            // we are logging user out here so above the currentUser will exist 
+            setCurrentUser(null);
+            setIsLoading(false);
             
         } catch (error) {
             console.log(error);
         }
 
-        // we are logging user out here so above the currentUser will exist 
-        setCurrentUser(null);
-        setIsLoading(false);
     }
 
 
